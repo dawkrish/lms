@@ -1,0 +1,21 @@
+<html>
+<title>Login Page</title>
+
+</html>
+
+<body>
+ <h2>Welcom Admin, Please sign-in</h2>
+ {% if error %}
+ <p> Error : {{error}} </p>
+ {% endif %}
+  <form method="post" action="/admin/login">
+    <label for="email">Email </label>
+    <input type="email" id="email" name="email" required>
+    <br />
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required>
+    <button>Submit</button>
+  </form>
+</body>
+
+</html>

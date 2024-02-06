@@ -1,0 +1,14 @@
+<html>
+<title>Admin Dashboard</title>
+
+</html>
+
+<body>
+  {% if session and session["username"]=="admin" %}
+  <h1>Hello {{ session["username"] }} </h1>
+  {% else %}
+  <h1>You need to login as admin, <a href="/admin/login">Click here</a></h1>
+  {% endif %}
+</body>
+
+</html>

@@ -1,0 +1,15 @@
+
+<html>
+<title>User Dashboard</title>
+
+</html>
+
+<body>
+  {% if session and not session["username"] == "admin" %}
+  <h1>Hello {{ session["username"] }} </h1>
+  {% else %}
+  <h1>You are not logged in, Go to <a href="/user/login">Login Page</a> </h1>
+  {% endif %}
+</body>
+
+</html>
