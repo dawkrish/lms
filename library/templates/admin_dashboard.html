@@ -1,14 +1,137 @@
-<html>
-<title>Admin Dashboard</title>
-
-</html>
-
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
 <body>
-  {% if session and session["username"]=="admin" %}
-  <h1>Hello {{ session["username"] }} </h1>
-  {% else %}
-  <h1>You need to login as admin, <a href="/admin/login">Click here</a></h1>
-  {% endif %}
-</body>
 
+{% if error %}
+    <p> Error : {{ error }} </p>
+{% endif %}
+<form action="/logout" method="post">
+    <button>Logout</button>
+</form>
+<h2>Sections</h2>
+<form action="/create_section" method="POST">
+    <label for="section_name">Name</label>
+    <input type="text" id="section_name" name="section_name" required>
+    <br>
+    <label for="section_description">Description</label>
+    <input type="text" id="section_description" name="section_description" required>
+    <br>
+    <button type="submit">Create Section</button>
+</form>
+<h3>List of Sections</h3>
+{% for i in data["sections"] %}
+    <li>{{ i.name }}</li>
+    <a href="/section/update/{{ i.id }}">
+        <button>Edit</button>
+    </a>
+    <a href="/section/delete/{{ i.id }}">
+        <button>Delete</button>
+    </a>
+{% endfor %}
+
+<h2>Books</h2>
+<form action="/create_book" method="POST">
+    <label for="book_name">Name</label>
+    <input type="text" id="book_name" name="book_name" required>
+    <br>
+    <label for="book_author">Author</label>
+    <input type="text" id="book_author" name="book_author" required>
+    <br>
+    <label for="book_content">Content</label>
+    <textarea name="book_content" id="book_content" cols="30" rows="10" placeholder="The book content..."
+              required></textarea>
+    <br>
+    <label for="book_section">Choose a section:</label>
+    <select name="book_section" id="book_section">
+        {% for i in data["sections"] %}
+            <option value="{{ i.id }}">{{ i.name }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <label for="book_copies">Number of Copies</label>
+    <input type="number" min="1" max="5" name="book_copies" id="book_copies" value="1" required>
+    <button>Add Book</button>
+</form>
+<h3>List of books</h3>
+<table class="table table-bordered table-hover">
+    <tr class="">
+        <th>Book Id</th>
+        <th>Name</th>
+        <th>Author</th>
+        <th>Section</th>
+        <th>Update</th>
+        <th>Delete</th>
+    </tr>
+
+    {% for i in data["books"] %}
+        <tr>
+            <td><a href="/book/{{ i.ud }}">{{ i.id }}</a></td>
+            <td>{{ i.name }}</td>
+            <td>{{ i.author }}</td>
+            <td>{{ i.section_name }}</td>
+
+            <td><a href="/book/update/{{ i.id }}">
+                <button>Update</button>
+            </a></td>
+            <td><a href="/book/delete/{{ i.id }}">
+                <button>Delete</button>
+            </a></td>
+        </tr>
+    {% endfor %}
+</table>
+<h2>Issues</h2>
+<h4>Note: Rating = -1 denotes that this book is revoked by librarian not the user</h4>
+<h4>The rating mentioned here is the total rating of the books by same name and same author, to check the indiviudal
+    rating go to "/book/id"</h4>
+{% if data['issue_records'] | length == 0 %}
+    <h4>No issues to display</h4>
+{% else %}
+    <table class="table table-bordered table-hover">
+
+        <tr class="">
+            <th>Issue Id</th>
+            <th>Book Id</th>
+            <th>Username</th>
+            <th>Status</th>
+            <th>Issue Date</th>
+            <th>Return Data</th>
+            <th>Rating</th>
+            <th>Revoke</th>
+        </tr>
+
+
+        {% for ir in data['issue_records'] %}
+            <tr>
+                <td>{{ ir.issue_id }}</td>
+                <td><a href="/book/update/{{ ir.book_id }}">{{ ir.book_id }}</a></td>
+                <td>{{ ir.username }}</td>
+                <td>{{ ir.status }}</td>
+                <td>{{ ir.date_issued }}</td>
+                <td>{{ ir.return_date }}</td>
+                {% if ir.rating == 0 %}
+                    <td>Not Yet Rated</td>
+                {% else %}
+                    <td>{{ ir.rating }}</td>
+                {% endif %}
+                {% if ir.status == True %}
+                    <td><a href="/book/return/{{ ir.book_id }}" type="">Revoke</a></td>
+                {% else %}
+                    <td>Already returned</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+
+
+    </table>
+{% endif %}
+</body>
 </html>
