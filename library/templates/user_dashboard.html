@@ -1,35 +1,44 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
     <title>User Dashboard</title>
-</head>
-<body>
-{% if session and not session["username"] == "admin" %}
-    <h1>Hello {{ session["username"] }} </h1>
-    <br>
+    <style>
+      body {
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    {% if session and not session["username"] == "admin" %}
+    <h1>Hello {{ session["username"] }}</h1>
+    <br />
 
     <form action="/logout" method="post">
-        <button>Logout</button>
+      <button>Logout</button>
     </form>
     <a href="/user/{{ data['user'].id }}">Click here, to edit profile</a>
     <p>To view or issue books, <a href="/library">click here</a></p>
 
     <h3>All the books issued by you !</h3>
     {% for ib in data["issued_books"] %}
-        <p>Book Name : {{ ib.name }}</p>
-        <p>Book Author : {{ ib.author }}</p>
-        <p>Book Content : {{ ib.content }}</p>
-        <a href="/book/return/{{ ib.book_id }}">Return Book</a>
-    {% endfor %}
-{% else %}
+    <p>Book Name : {{ ib.name }}</p>
+    <p>Book Author : {{ ib.author }}</p>
+    <p>Book Content : {{ ib.content }}</p>
+    <a href="/book/return/{{ ib.book_id }}">Return Book</a>
+    {% endfor %} {% else %}
     <h1>You are not logged in, Go to <a href="/user/login">Login Page</a></h1>
-{% endif %}
-
-</body>
+    {% endif %}
+  </body>
 </html>

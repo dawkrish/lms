@@ -49,7 +49,8 @@ def user_signup():
             return render_template("user_signup.html", error="Email already exists")
 
         hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt(15))
-        new_user = models.User(username=username, email=email, password=hashed_password.decode())
+        new_user = models.User(
+            username=username, email=email, password=hashed_password.decode())
         db.session.add(new_user)
         db.session.commit()
 
@@ -67,7 +68,8 @@ def user_login():
     if username == "admin":
         return render_template("admin_not_allowed.html")
 
-    existing_user = models.User.query.filter(models.User.username == username).first()
+    existing_user = models.User.query.filter(
+        models.User.username == username).first()
     if existing_user is None:
         return render_template("user_login.html", error="Invalid credentials")
     if not bcrypt.checkpw(password.encode(), existing_user.password.encode()):
@@ -87,9 +89,11 @@ def user_dashboard():
 
     username = session.get("username")
     user_id = get_user_id()
-    existing_user = models.User.query.filter(models.User.username == username).first()
+    existing_user = models.User.query.filter(
+        models.User.username == username).first()
 
-    issue_records = models.Issue.query.filter(models.Issue.user_id == user_id, models.Issue.active_status == True).all()
+    issue_records = models.Issue.query.filter(
+        models.Issue.user_id == user_id, models.Issue.active_status == True).all()
     modified_issue_records = []
 
     for ir in issue_records:
@@ -119,7 +123,8 @@ def user_profile(id):
         }
         return render_template("not_found.html", data=data)
 
-    issue_records = models.Issue.query.filter(models.Issue.user_id == id, models.Issue.active_status == True).all()
+    issue_records = models.Issue.query.filter(
+        models.Issue.user_id == id, models.Issue.active_status == True).all()
     modified_issue_records = []
 
     for ir in issue_records:
@@ -173,7 +178,8 @@ def user_profile(id):
 
     existing_user.username = updated_username
     existing_user.email = updated_email
-    existing_user.password = bcrypt.hashpw(updated_password.encode(), bcrypt.gensalt(10)).decode()
+    existing_user.password = bcrypt.hashpw(
+        updated_password.encode(), bcrypt.gensalt(10)).decode()
 
     db.session.commit()
     session["username"] = existing_user.username
@@ -201,7 +207,8 @@ def admin_login():
         email = request.form["email"]
         password = request.form["password"]
 
-        existing_admin = models.User.query.filter(models.User.email == email).first()
+        existing_admin = models.User.query.filter(
+            models.User.email == email).first()
         if existing_admin is None:
             return render_template("admin_login.html", error="This email does not exists")
         if existing_admin.is_admin is False:
@@ -285,7 +292,8 @@ def library():
             modified_group_books.append(modify_the_book(gb))
 
     else:
-        section_id = models.Section.query.filter(models.Section.name == section_name).first().id
+        section_id = models.Section.query.filter(
+            models.Section.name == section_name).first().id
         section_books = models.Book.query.filter(
             models.Book.section_id == section_id).all()
 
@@ -352,7 +360,8 @@ def book_post():
         book_copies = request.form["book_copies"]
 
         for i in range(int(book_copies)):
-            new_book = models.Book(name=book_name, author=book_author, content=book_content, section_id=book_section)
+            new_book = models.Book(
+                name=book_name, author=book_author, content=book_content, section_id=book_section)
             db.session.add(new_book)
             db.session.commit()
         return redirect("/admin/dashboard")
@@ -433,7 +442,7 @@ def book_delete(id):
                                            models.Book.author == existing_book.author).all()
     if request.method == "GET":
         data = {
-            "book": existing_book,
+            "book": modify_the_book(existing_book),
             "number_of_copies": len(book_copies),
         }
         return render_template("book_delete.html", data=data)
@@ -476,7 +485,8 @@ def book_issue(id):
 
     user_id = get_user_id()
     today_date = datetime.date.today()
-    issue_records = models.Issue.query.filter(models.Issue.user_id == user_id, models.Issue.active_status == True).all()
+    issue_records = models.Issue.query.filter(
+        models.Issue.user_id == user_id, models.Issue.active_status == True).all()
     total_number_of_books_issued = len(issue_records)
 
     if total_number_of_books_issued >= 5:
@@ -547,7 +557,13 @@ def book_return(id):
         <p> Go back to library  <a href="/library">click here</a></p>
         '''
 
-    issue_record = models.Issue.query.filter(models.Issue.book_id == id, models.Issue.active_status == True).first()
+    issue_record = models.Issue.query.filter(
+        models.Issue.book_id == id, models.Issue.active_status == True).first()
+    if issue_record.user_id != get_user_id():
+        return '''
+            <h1>This book is not issued by you</h1>
+            <p><a href="/">Go Back</a></p>
+            '''
     if session["username"] == "admin":
         issue_record.rating = -1
         issue_record.active_status = False
@@ -586,7 +602,8 @@ def section_get(id):
             "type": "Section"
         }
         return render_template("not_found.html", data=data)
-    issue_records = models.Issue.query.filter(models.Book.section_id == id).all()
+    issue_records = models.Issue.query.filter(
+        models.Book.section_id == id).all()
 
     data = {
         "section": section,
@@ -614,7 +631,8 @@ def section_post():
                 This section already exists
                 <a href="/admin/dashboard">Go Back</a>
             '''
-        new_section = models.Section(name=section_name, description=section_description, date_created=date_created)
+        new_section = models.Section(
+            name=section_name, description=section_description, date_created=date_created)
         db.session.add(new_section)
         db.session.commit()
         return redirect("/admin/dashboard")
@@ -637,13 +655,18 @@ def section_update(id):
 
     if request.method == "GET":
         data = {
-            "section": existing_section
+            "section": existing_section,
         }
         return render_template("section_update.html", data=data)
 
     updated_section_name = request.form["updated_section_name"]
     updated_section_description = request.form["updated_section_description"]
 
+    if models.Section.query.filter(models.Section.name == updated_section_name).first() is not None:
+            return '''
+                This section already exists
+                <a href="/admin/dashboard">Go Back</a>
+            '''
     existing_section.name = updated_section_name
     existing_section.description = updated_section_description
     db.session.commit()
@@ -718,14 +741,16 @@ def modify_the_book(book):
 
 
 def get_user_id():
-    user = models.User.query.filter(models.User.username == session.get("username")).first()
+    user = models.User.query.filter(
+        models.User.username == session.get("username")).first()
     if user is None:
         return None
     return user.id
 
 
 def get_book_status(b):
-    issue_record = models.Issue.query.filter(models.Issue.book_id == b.id).all()
+    issue_record = models.Issue.query.filter(
+        models.Issue.book_id == b.id).all()
     for ir in issue_record:
         if ir.active_status:
             return True
@@ -749,10 +774,12 @@ def group_books(books):
 
 def calculate_book_rating(b_id):
     b = models.Book.query.get(b_id)
-    book_copies = models.Book.query.filter(models.Book.name == b.name, models.Book.author == b.author).all()
+    book_copies = models.Book.query.filter(
+        models.Book.name == b.name, models.Book.author == b.author).all()
     total_rating = 0
     for bc in book_copies:
-        issue_records = models.Issue.query.filter(models.Issue.book_id == bc.id, models.Issue.rating > 1).all()
+        issue_records = models.Issue.query.filter(
+            models.Issue.book_id == bc.id, models.Issue.rating > 1).all()
         for ir in issue_records:
             total_rating += ir.rating
 
