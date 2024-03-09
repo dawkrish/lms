@@ -188,7 +188,7 @@ def user_profile(id):
         "logged_in_user": username,
         "error": ""
     }
-    return render_template("user_profile.html", data=data)
+    return redirect("/")
 
 
 '''
@@ -325,16 +325,18 @@ def library():
 def book_get(id):
     if session.get("username") is None:
         return render_template("no_login.html")
-    book = models.Book.query.get(id)
-    if book is None:
+    existing_book = models.Book.query.get(id)
+    if existing_book is None:
         data = {
             "type": "Book"
         }
         return render_template("not_found.html", data=data)
     issue_records = models.Issue.query.filter(models.Issue.book_id == id).all()
-
+    book_copies = models.Book.query.filter(models.Book.name == existing_book.name,
+                                           models.Book.author == existing_book.author).all()
     data = {
-        "book": modify_the_book(book),
+        "book": modify_the_book(existing_book),
+        "book_copies": book_copies,
         "issue_records": [modify_the_issue_record(ir) for ir in issue_records]
     }
 
@@ -376,6 +378,7 @@ def book_update(id):
         return render_template("user_not_allowed.html")
 
     existing_book = models.Book.query.get(id)
+
     if existing_book is None:
         data = {
             "type": "Book"
@@ -389,7 +392,7 @@ def book_update(id):
         data = {
             "sections": models.Section.query.filter().all(),
             "book": modified_book,
-            "number_of_copies": len(book_copies),
+            "book_copies": book_copies,
         }
         return render_template("book_update.html", data=data)
 
@@ -443,7 +446,7 @@ def book_delete(id):
     if request.method == "GET":
         data = {
             "book": modify_the_book(existing_book),
-            "number_of_copies": len(book_copies),
+            "book_copies": book_copies
         }
         return render_template("book_delete.html", data=data)
 
@@ -559,17 +562,19 @@ def book_return(id):
 
     issue_record = models.Issue.query.filter(
         models.Issue.book_id == id, models.Issue.active_status == True).first()
-    if issue_record.user_id != get_user_id():
-        return '''
-            <h1>This book is not issued by you</h1>
-            <p><a href="/">Go Back</a></p>
-            '''
+    
     if session["username"] == "admin":
         issue_record.rating = -1
         issue_record.active_status = False
         issue_record.return_date = datetime.date.today()
         db.session.commit()
         return redirect("/admin/dashboard")
+    
+    if issue_record.user_id != get_user_id():
+        return '''
+            <h1>This book is not issued by you</h1>
+            <p><a href="/">Go Back</a></p>
+            '''
 
     if request.method == "GET":
         modified_book = modify_the_book(existing_book)
@@ -663,7 +668,7 @@ def section_update(id):
     updated_section_description = request.form["updated_section_description"]
 
     if models.Section.query.filter(models.Section.name == updated_section_name).first() is not None:
-            return '''
+        return '''
                 This section already exists
                 <a href="/admin/dashboard">Go Back</a>
             '''

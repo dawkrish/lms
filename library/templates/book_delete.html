@@ -14,7 +14,7 @@
       body {
         padding: 10px;
       }
-      .label_text{
+      .label_text {
         font-size: larger;
       }
     </style>
@@ -35,16 +35,24 @@
       <strong><u>Book Content</u></strong> : {{ data["book"].content }}
     </p>
     <br />
-    {% if data["number_of_copies"] > 1 %}
+    {% if data["book_copies"] | length > 1 %}
     <h5>
-      Note : There are {{ data["number_of_copies"] }} books with same name and
-      author, check the box if you want to delete all of them
+      Note : There are {{ data["book_copies"] | length }} &nbsp;&nbsp;
+      <span>[ </span>
+      {% for i in data["book_copies"] %}
+      <a href="/book/{{i.id}}">{{i.id}}</a>
+      {% endfor %}
+      <span> ]</span>
+      &nbsp;&nbsp; books with same name and author, check the box if you want to
+      delete all of them
     </h5>
     <hr class="border-4" />
     <h4>Update Form</h4>
-    <br>
+    <br />
     <form action="/book/delete/{{ data['book'].id }}" method="POST">
-      <label for="multiple_bool" class="label_text">Multiple Delete&nbsp;&nbsp;&nbsp;&nbsp;</label>
+      <label for="multiple_bool" class="label_text"
+        >Multiple Delete&nbsp;&nbsp;&nbsp;&nbsp;</label
+      >
       <input type="radio" value="yes" id="yes_radio" name="multiple_bool" />
       <label for="yes_radio" class="label_text">Yes</label>
       <input

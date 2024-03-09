@@ -18,27 +18,61 @@
       body {
         padding: 10px;
       }
+      .book {
+        padding: 10px;
+        border: 1px solid black;
+        border-radius: 5px;
+      }
     </style>
   </head>
   <body>
-    {% if session and not session["username"] == "admin" %}
-    <h1>Hello {{ session["username"] }}</h1>
+    <header class="d-flex justify-content-between">
+      <h2>Welcome <em>{{session["username"]}}</em></h2>
+      <form action="/logout" method="post">
+        <button class="btn btn-secondary btn-lg">Logout</button>
+      </form>
+    </header>
     <br />
 
-    <form action="/logout" method="post">
-      <button>Logout</button>
-    </form>
-    <a href="/user/{{ data['user'].id }}">Click here, to edit profile</a>
-    <p>To view or issue books, <a href="/library">click here</a></p>
+    <a href="/user/{{ data['user'].id }}"
+      ><button class="btn btn-primary">Update Profile</button></a
+    >
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <span
+      ><a href="/library"
+        ><button class="btn btn-primary">Go to Library</button></a
+      ></span
+    >
+    <br />
+    <br />
+    <br />
+    <h4>
+      <strong><u>Issued Books</u></strong>
+    </h4>
+    <br />
+    {% if data["issued_books"] | length > 0 %} {% for ib in data["issued_books"]
+    %}
+    <div class="book">
+      <p>
+        <strong><em>Book Id</em></strong> : {{ ib.book_id }}
+      </p>
+      <p>
+        <strong><em>Book Name</em></strong> : {{ ib.name }}
+      </p>
+      <p>
+        <strong><em>Book Author</em></strong> : {{ ib.author }}
+      </p>
+      <p>
+        <strong><em>Book Content</em></strong> : {{ ib.content }}
+      </p>
+      <a href="/book/return/{{ ib.book_id }}"
+        ><button class="btn btn-primary">Return Book</button></a
+      >
+    </div>
 
-    <h3>All the books issued by you !</h3>
-    {% for ib in data["issued_books"] %}
-    <p>Book Name : {{ ib.name }}</p>
-    <p>Book Author : {{ ib.author }}</p>
-    <p>Book Content : {{ ib.content }}</p>
-    <a href="/book/return/{{ ib.book_id }}">Return Book</a>
+    <br />
     {% endfor %} {% else %}
-    <h1>You are not logged in, Go to <a href="/user/login">Login Page</a></h1>
+    <h5>Please issue some books</h5>
     {% endif %}
   </body>
 </html>

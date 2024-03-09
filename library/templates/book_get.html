@@ -40,10 +40,22 @@
       Either check your dashboard or you need to visit
       <a href="/library">Library</a> to issue and view book content
     </p>
+    {% endif %} {% if data["book_copies"] | length > 1 %}
+    <h5>
+      Note : There are {{ data["book_copies"] | length }} &nbsp;&nbsp;
+      <span>[ </span>
+      {% for i in data["book_copies"] %}
+      <a href="/book/{{i.id}}">{{i.id}}</a>
+      {% endfor %}
+      <span> ]</span>
+      &nbsp;&nbsp; books with same name and author, check the box if you want to
+      delete all of them
+    </h5>
     {% endif %}
+
     <hr class="border-4" />
     <h3>Issue Records for Book-{{ data["book"].id }}</h3>
-
+    <br />
     {% if data['issue_records'] | length == 0 %}
     <p>No Issue Records for this book</p>
     <br />

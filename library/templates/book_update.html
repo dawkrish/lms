@@ -10,6 +10,11 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <style>
+      body{
+        padding: 10px;
+      }
+    </style>
   </head>
   <body>
     <h3>Book {{data["book"].id}} Details</h3>
@@ -27,10 +32,18 @@
       <strong><u>Book Content</u></strong> : {{ data["book"].content }}
     </p>
     <br />
-    {% if data["number_of_copies"] > 1 %}
+    {% if data["book_copies"] |  length > 1 %}
     <h5>
-      Note : There are {{ data["number_of_copies"] }} books with same name and
-      author, check the box if you want to delete all of them
+      Note : There are {{ data["book_copies"] | length }} 
+      &nbsp;&nbsp;
+      <span>[ </span>
+      {% for i in data["book_copies"] %}
+      <a href="/book/{{i.id}}">{{i.id}}</a>
+      {% endfor %}
+      <span> ]</span>
+      &nbsp;&nbsp;
+      books with same name and
+      author, check the box if you want to update all of them
     </h5>
     <hr class="border-4" />
     <h4>Update Form</h4>
@@ -44,6 +57,7 @@
             name="updated_book_name"
             value="{{ data['book'].name }}"
             class="form-control"
+            required
           />
           <label for="updated_book_name">Name</label>
         </div>
@@ -54,6 +68,7 @@
             name="updated_book_author"
             value="{{ data['book'].author }}"
             class="form-control"
+            required
           />
           <label for="updated_book_author">Author</label>
         </div>
@@ -93,6 +108,7 @@
             cols="30"
             rows="10"
             class="form-control"
+            required
           ></textarea>
           <label for="updated_book_content">Content</label>
         </div>
@@ -101,58 +117,6 @@
         </div>
       </div>
     </form>
-
-    <!-- <form action="/book/update/{{ data['book'].id }}" method="POST">
-      <label for="updated_book_name">Name</label>
-      <input
-        type="text"
-        id="updated_book_name"
-        name="updated_book_name"
-        value="{{ data['book'].name }}"
-      />
-      <br />
-      <label for="updated_book_author">Author</label>
-      <input
-        type="text"
-        id="updated_book_author"
-        name="updated_book_author"
-        value="{{ data['book'].author }}"
-      />
-      <br />
-      <label for="multiple_bool">Multiple Edit</label>
-      <br />
-      <input type="radio" value="yes" id="yes_radio" name="multiple_bool" />
-      <label for="yes_radio">Yes</label>
-      <input
-        type="radio"
-        value="no"
-        id="no_radio"
-        name="multiple_bool"
-        checked="checked"
-      />
-      <label for="no_radio">No</label>
-      <br />
-      <label for="updated_book_content">Content</label>
-      <br />
-      <textarea
-        name="updated_book_content"
-        id="updated_book_content"
-        cols="30"
-        rows="10"
-        placeholder="{{ data['book'].content }}"
-      ></textarea>
-      <br />
-      <label for="updated_book_section">Choose a section:</label>
-      <select name="updated_book_section" id="updated_book_section">
-        {% for i in data["sections"] %} {% if i.name ==
-        data['book'].section_name %}
-        <option value="{{ i.name }}" selected="selected">{{ i.name }}</option>
-        {% else %}
-        <option value="{{ i.name }}">{{ i.name }}</option>
-        {% endif %} {% endfor %}
-      </select>
-      <button class="btn btn-primary">Update Books</button>
-    </form> -->
 
     {% else %}
 

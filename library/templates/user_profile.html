@@ -1,70 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
     <title>User Profile</title>
-</head>
-<body>
-{% if data['error'] %}
-    <h2> Error : {{ data['error'] }} </h2>
-{% endif %}
-
-{% if data["logged_in_user"] != data["user"].username %}
-    <h2>You are not viewing your profile !</h2>
-    <h3>User Profile</h3>
-    <h4>Current Details</h4>
-    <p>{{ data["user"].username }}</p>
-    <p>{{ data["user"].email }}</p>
-
-    {% if data['issued_books'] | length == 0 %}
-        <h4>This User has no issued books !</h4>
+    <style>
+      body {
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    {% if data['error'] %}
+    <p class="text-danger">Error : {{ data['error'] }}</p>
+    {% endif %} {% if data["logged_in_user"] != data["user"].username %}
+    <h3 class="text-danger">You are not viewing your profile !</h3>
+    <hr class="border-4" />
+    <br />
+    <h4><u>User Profile</u></h4>
+    <br />
+    <p>
+      <strong><u>Username</u></strong> &nbsp; &nbsp; &nbsp;<em
+        >{{ data["user"].username }}</em
+      >
+    </p>
+    <p>
+      <strong><u>Email</u></strong> &nbsp; &nbsp; &nbsp;<em
+        >{{ data["user"].email }}</em
+      >
+    </p>
+    <hr class="border-4" />
+    <br />
+    {% if data['user'].issues | length == 0 %}
+    <h4>This User has no issued books !</h4>
     {% else %}
-        <table class="table table-bordered table-hover">
-            <tr>
-                <th>Book Name</th>
-                <th>Book Author</th>
-                <th>Date Issues</th>
-                <th>Return Date</th>
-            </tr>
-            {% for ir in data['issued_books'] %}
-                <tr>
-                    <td>{{ ir.name }}</td>
-                    <td>{{ ir.author }}</td>
-                    <td>{{ ir.date_issued }}</td>
-                    <td>{{ ir.return_date }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
-{% else %}
-    <h2>My Profile</h2>
-    <h4>Current Details</h4>
-    <p>{{ data["user"].username }}</p>
-    <p>{{ data["user"].email }}</p>
-    <br>
-    <h3>Form for updating details</h3>
+    <h4><u>Issued Books</u></h4>
+    <br />
+    <table class="table table-bordered table-hover">
+      <tr>
+        <th>Book Id</th>
+        <th>Book Status</th>
+        <th>Date Issued</th>
+        <th>Return Date</th>
+      </tr>
+      {% for ir in data['user'].issues %}
+      <tr>
+        <td><a href="/book/{{ir.book_id}}">{{ ir.book_id }}</a></td>
+        <td>{{ ir.active_status }}</td>
+        <td>{{ ir.date_issued }}</td>
+        <td>{{ ir.return_date }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% endif %} {% else %}
+    <h3><u>My Profile</u></h3>
+    <br />
+    <p>
+      <strong><u>Username</u></strong> &nbsp; &nbsp; &nbsp;<em
+        >{{ data["user"].username }}</em
+      >
+    </p>
+    <p>
+      <strong><u>Email</u></strong> &nbsp; &nbsp; &nbsp;<em
+        >{{ data["user"].email }}</em
+      >
+    </p>
+    <hr class="border-4" />
+    <br />
+    <h4>Update Form</h4>
+    <br />
     <form action="/user/{{ data['user'].id }}" method="POST">
-        <label for="update_username">Username </label>
-        <input type="text" id="update_username" name="updated_username" placeholder="{{ data['user'].username }}"
-               required>
-        <br/>
-        <label for="updated_email">updated_email</label>
-        <input type="email" id="updated_email" name="updated_email" placeholder="{{ data['user'].email }}" required>
-        <br/>
-        <label for="current_password">Current Password</label>
-        <input type="password" id="current_password" name="current_password" required>
-        <br/>
-        <label for="updated_password">Updated Password</label>
-        <input type="password" id="updated_password" name="updated_password" required>
-        <br>
-        <label for="updated_confirm_password">Updated Confirm Password</label>
-        <input type="password" id="updated_confirm_password" name="updated_confirm_password" required>
-        <br>
-        <button>Update</button>
+      <div class="row">
+        <div class="col form-floating">
+          <input
+            class="form-control"
+            type="text"
+            id="update_username"
+            name="updated_username"
+            required
+          />
+          <label for="update_username">Username </label>
+        </div>
+        <div class="col form-floating">
+          <input
+            class="form-control"
+            type="email"
+            id="updated_email"
+            name="updated_email"
+            required
+          />
+          <label for="updated_email">updated_email</label>
+        </div>
+        <div class="col form-floating">
+          <input
+            class="form-control"
+            type="password"
+            id="current_password"
+            name="current_password"
+            required
+          />
+          <label for="current_password">Current Password</label>
+        </div>
+        <div class="col form-floating">
+          <input
+            class="form-control"
+            type="password"
+            id="updated_password"
+            name="updated_password"
+            required
+          />
+          <label for="updated_password">Updated Password</label>
+        </div>
+        <div class="col form-floating">
+          <input
+            class="form-control"
+            type="password"
+            id="updated_confirm_password"
+            name="updated_confirm_password"
+            required
+          />
+          <label for="updated_confirm_password">Updated Confirm Password</label>
+        </div>
+      </div>
+      <br />
+      <button class="btn btn-primary">Update User</button>
     </form>
-{% endif %}
-</body>
+    {% endif %}
+  </body>
 </html>

@@ -22,7 +22,7 @@
   </head>
   <body>
     {% if error %}
-    <p>Error : {{ error }}</p>
+    <p class="text-danger">Error : {{ error }}</p>
     {% endif %}
     <header class="d-flex justify-content-between">
       <h2>Welcome Admin</h2>
@@ -164,12 +164,12 @@
 
         {% for i in data["books"] %}
         <tr>
-          <td><a href="/book/{{ i.ud }}">{{ i.id }}</a></td>
+          <td><a href="/book/{{ i.id }}">{{ i.id }}</a></td>
           <td>{{ i.name }}</td>
           <td>{{ i.author }}</td>
           <td>{{ i.section_name }}</td>
           <td><a href="/book/update/{{i.id}}">Update</a></td>
-          <td><a href="/bok/delete/{{i.id}}">Delete</a></td>
+          <td><a href="/book/delete/{{i.id}}">Delete</a></td>
         </tr>
         {% endfor %}
       </table>
@@ -195,7 +195,7 @@
           <th>Username</th>
           <th>Status</th>
           <th>Issue Date</th>
-          <th>Return Data</th>
+          <th>Return Date</th>
           <th>Rating</th>
           <th>Revoke</th>
         </tr>

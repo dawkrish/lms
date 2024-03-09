@@ -33,15 +33,17 @@
     <h4>You can only issue upto 5 books and not more than for a week</h4>
     <hr class="border-4" />
     <form action="/book/issue/{{data['book'].id}}" method="POST">
-      <label for="return_date" class="label_text">Return Date</label>
+      <label for="return_date" class="label_text">Return Date&nbsp;&nbsp;</label>
       <input
         type="date"
         name="return_date"
         id="return_date"
         min="{{data['min_date']}}"
         max="{{data['max_date']}}"
+        required
       />
-      <button>Issue</button>
+      &nbsp;&nbsp;&nbsp;
+      <button class="btn btn-primary">Issue Book</button>
     </form>
   </body>
 </html>
